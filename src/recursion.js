@@ -152,26 +152,68 @@ var palindrome = function(string) {
 // modulo(17,5) // 2
 // modulo(22,6) // 4
 var modulo = function(x, y) {
-  if (x < y) {
-
-    return x;
-  }
-  else if ( x === 0 && y === 0) {
+  if (y === 0) {
     return NaN;
   }
+  else if (x === 0) {
+  	return 0;
+  }
+  else if (x < 0) {
+  	return -modulo(-x, y);
+  }
+  else if (y < 0) {
+  	return modulo(x, -y);
+  }
+  else if (x >= y) {
+  	return modulo(x - y, y);
+  }
   else {
-    return modulo(x-y, y);
+  	return x;
   }
 };
 
 // 12. Write a function that multiplies two numbers without using the * operator or
 // Math methods.
 var multiply = function(x, y) {
+  if (y === 1 || y === -1) {
+    return x;
+  }
+  else if (x === 0 || y === 0) {
+    return 0;
+  }
+  else if (y < 0) {
+    return multiply(-x,-y);
+  }
+  else if (x < 0) {
+    return x + multiply(x, y - 1);
+  }
+  return x + multiply(x, y - 1);
 };
 
 // 13. Write a function that divides two numbers without using the / operator or
 // Math methods to arrive at an approximate quotient (ignore decimal endings).
 var divide = function(x, y) {
+	if (y === 0) {
+		return NaN;
+  }
+  else if (x === 0) {
+		return 0;
+  }
+  if (x < 0 && y > 0) {
+		return -divide(-x, y);
+  }
+  else if (x > 0 && y < 0) {
+		return -divide(x, -y);
+  }
+  else if (x < 0 && y < 0) {
+		return divide(-x, -y);
+  }
+  else if (x >= y) {
+		return 1 + divide(x - y, y);
+  }
+  else {
+		return 0;
+	}
 };
 
 // 14. Find the greatest common divisor (gcd) of two positive numbers. The GCD of two
@@ -180,6 +222,26 @@ var divide = function(x, y) {
 // http://www.cse.wustl.edu/~kjg/cse131/Notes/Recursion/recursion.html
 // https://www.khanacademy.org/computing/computer-science/cryptography/modarithmetic/a/the-euclidean-algorithm
 var gcd = function(x, y) {
+  if (x < y) {
+    return gcd(y, x);
+  }
+  var results = divide(x, y);
+  var remainder = modulo(x, y);
+  if (x === 0) {
+    return y;
+  }
+  else if (y === 0) {
+    return x;
+  }
+  else if (x < 0 || y < 0) {
+    return null;
+  }
+  else if (remainder === 0) {
+    return y;
+  }
+  else {
+    return gcd(y, remainder)
+  }
 };
 
 // 15. Write a function that compares each character of two strings and returns true if

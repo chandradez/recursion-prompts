@@ -569,11 +569,15 @@ var minimizeZeroes = function(array) {
 // alternateSign([2,7,8,3,1,4]) // [2,-7,8,-3,1,-4]
 // alternateSign([-2,-7,8,3,-1,4]) // [2,-7,8,-3,1,-4]
 var alternateSign = function(array) {
-  if (array.length === 0) {
-    return array;
+  var length = array.length;
+  if (length === 1) {
+    return [Math.abs(array[0])];
   }
-  else {
-    return [-array[0]].concat(alternateSign(array.slice(1)));
+  else if (length % 2 === 0){
+    return alternateSign(array.slice(0, length - 1)).concat([-Math.abs(array[length - 1])]);
+  }
+  else if (length % 2 === 1){
+    return alternateSign(array.slice(0, length - 1)).concat([Math.abs(array[length - 1])]);
   }
 };
 

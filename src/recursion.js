@@ -375,7 +375,7 @@ var countKeysInObj = function(obj, key) {
 // countValuesInObj(obj, 'e') // 1
 var countValuesInObj = function(obj, value) {
   var occurance = 0;
-  for (item in obj) {
+  for (var item in obj) {
     if (obj[item] === value) {
       occurance = occurance + 1;
     }
@@ -389,6 +389,17 @@ var countValuesInObj = function(obj, value) {
 // 24. Find all keys in an object (and nested objects) by a provided name and rename
 // them to a provided new name while preserving the value stored at that key.
 var replaceKeysInObj = function(obj, oldKey, newKey) {
+  for (var key in obj) {
+    if (key === oldKey) {
+      obj[newKey] = obj[key];
+      delete obj[key];
+    }
+    else if (typeof obj[key] === 'object') {
+      replaceKeysInObj(obj[key], oldKey, newKey);
+    }
+  }
+
+  return obj;
 };
 
 // 25. Get the first n Fibonacci numbers. In the Fibonacci sequence, each subsequent
@@ -397,6 +408,16 @@ var replaceKeysInObj = function(obj, oldKey, newKey) {
 // fibonacci(5); // [0,1,1,2,3,5]
 // Note: The 0 is not counted.
 var fibonacci = function(n) {
+  if (n <= 0) {
+    return null;
+  }
+  else if (n === 1) {
+		return [0, 1];
+	}
+	var arr = fibonacci(n - 1);
+	arr.push(arr[arr.length - 1] + arr[arr.length - 2]);
+	return arr;
+
 };
 
 // 26. Return the Fibonacci number located at index n of the Fibonacci sequence.
@@ -405,17 +426,41 @@ var fibonacci = function(n) {
 // nthFibo(7); // 13
 // nthFibo(3); // 2
 var nthFibo = function(n) {
+  if (n < 0) {
+		return null;
+  }
+  else if (n === 0) {
+		return 0;
+  }
+  else if (n === 1 || n === 2) {
+		return 1;
+  }
+  else {
+		return nthFibo(n - 1) + nthFibo(n - 2);
+	}
 };
 
 // 27. Given an array of words, return a new array containing each word capitalized.
 // var words = ['i', 'am', 'learning', 'recursion'];
 // capitalizedWords(words); // ['I', 'AM', 'LEARNING', 'RECURSION']
 var capitalizeWords = function(array) {
+  if (array.length === 0) {
+    return [];
+  }
+  var removeOne = array.slice(1);
+  return [(array[0].toUpperCase())].concat(capitalizeWords(removeOne));
 };
 
 // 28. Given an array of strings, capitalize the first letter of each index.
 // capitalizeFirst(['car','poop','banana']); // ['Car','Poop','Banana']
 var capitalizeFirst = function(array) {
+  if (array.length === 0) {
+    return [];
+  }
+  var removeOne = array.slice(1);
+  var nocaps = array[0];
+  var capped = nocaps[0].toUpperCase() + nocaps.substring(1);
+  return [capped].concat(capitalizeFirst(removeOne));
 };
 
 // 29. Return the sum of all even numbers in an object containing nested objects.
@@ -428,16 +473,50 @@ var capitalizeFirst = function(array) {
 // };
 // nestedEvenSum(obj1); // 10
 var nestedEvenSum = function(obj) {
+
+  var sumOfEven = 0;
+  for (var key in obj) {
+    if (obj[key] % 2 === 0) {
+      sumOfEven += obj[key]
+    }
+    else if (typeof obj[key] === 'object'){
+      sumOfEven += nestedEvenSum(obj[key]);
+    }
+  }
+
+  return sumOfEven;
+
 };
 
 // 30. Flatten an array containing nested arrays.
 // flatten([1,[2],[3,[[4]]],5]); // [1,2,3,4,5]
 var flatten = function(array) {
+  var flatArray = [];
+  for (var i = 0; i < array.length; i++) {
+    if (Array.isArray(array[i])) {
+      flatArray = flatArray.concat(flatten(array[i]));
+    }
+    else {
+      flatArray = flatArray.concat(array[i]);
+    }
+  }
+  return flatArray;
 };
 
 // 31. Given a string, return an object containing tallies of each letter.
 // letterTally('potato'); // {p:1, o:2, t:2, a:1}
-var letterTally = function(str, obj) {
+var letterTally = function(str, obj={}) {
+if (str.length === 0) {
+  return obj;
+}
+else if (obj[str[0]] === undefined) {
+  obj[str[0]] = 1;
+}
+else {
+  obj[str[0]] = obj[str[0]] + 1;
+}
+str = str.substring(1);
+return letterTally(str, obj);
 };
 
 // 32. Eliminate consecutive duplicates in a list. If the list contains repeated
@@ -446,18 +525,43 @@ var letterTally = function(str, obj) {
 // compress([1,2,2,3,4,4,5,5,5]) // [1,2,3,4,5]
 // compress([1,2,2,3,4,4,2,5,5,5,4,4]) // [1,2,3,4,2,5,4]
 var compress = function(list) {
+  if (list.length === 1) {
+		return list;
+  }
+  else if (list[0] === list[1]) {
+		return compress(list.slice(1));
+  }
+  else {
+		return [list[0]].concat(compress(list.slice(1)));
+	}
 };
 
 // 33. Augment every element in a list with a new value where each element is an array
 // itself.
 // augmentElements([[],[3],[7]], 5); // [[5],[3,5],[7,5]]
 var augmentElements = function(array, aug) {
+  if (array.length === 0) {
+		return [];
+  }
+  else {
+    var newElement = [array[0].concat(aug)];
+    return newElement.concat(augmentElements(array.slice(1), aug));
+	}
 };
 
 // 34. Reduce a series of zeroes to a single 0.
 // minimizeZeroes([2,0,0,0,1,4]) // [2,0,1,4]
 // minimizeZeroes([2,0,0,0,1,0,0,4]) // [2,0,1,0,4]
 var minimizeZeroes = function(array) {
+  if (array.length === 0) {
+		return array;
+  }
+  else if (array[0] === 0 && array[1] === 0) {
+		return minimizeZeroes(array.slice(1));
+  }
+  else {
+		return [array[0]].concat(minimizeZeroes(array.slice(1)));
+	}
 };
 
 // 35. Alternate the numbers in an array between positive and negative regardless of
@@ -465,12 +569,40 @@ var minimizeZeroes = function(array) {
 // alternateSign([2,7,8,3,1,4]) // [2,-7,8,-3,1,-4]
 // alternateSign([-2,-7,8,3,-1,4]) // [2,-7,8,-3,1,-4]
 var alternateSign = function(array) {
+  if (array.length === 0) {
+    return array;
+  }
+  else {
+    return [-array[0]].concat(alternateSign(array.slice(1)));
+  }
 };
 
 // 36. Given a string, return a string with digits converted to their word equivalent.
 // Assume all numbers are single digits (less than 10).
 // numToText("I have 5 dogs and 6 ponies"); // "I have five dogs and six ponies"
 var numToText = function(str) {
+
+  var numIndex = {
+		'1': 'one',
+		'2': 'two',
+		'3': 'three',
+		'4': 'four',
+		'5': 'five',
+		'6': 'six',
+		'7': 'seven',
+		'8': 'eight',
+		'9': 'nine'
+  };
+
+	if (str.length === 0) {
+		return '';
+  }
+  else if (numIndex[str[0]]) {
+		return numIndex[str[0]] + numToText(str.substring(1));
+  }
+
+		return str[0] + numToText(str.substring(1));
+
 };
 
 
